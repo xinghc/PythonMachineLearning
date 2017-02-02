@@ -1,5 +1,8 @@
 __author__ = 'mike_bowles'
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 import sys
 import numpy as np
 
@@ -10,7 +13,7 @@ xList = []
 labels = []
 
 for line in data:
-	row = line.strip().split( "," )
+	row = line.strip().decode().split( "," )
 	xList.append(row)
 nrow = len(xList)
 ncol = len(xList[1])

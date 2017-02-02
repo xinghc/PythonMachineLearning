@@ -2,17 +2,19 @@ __author__ = 'mike_bowles'
 import numpy as np
 import pylab
 import scipy.stats as stats
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 import sys
 
 target_url = ( "https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data" )
-data = urllib2.urlopen(target_url)
-
+data = urllib2.urlopen(target_url).readlines()
 xList = []
 labels = []
 
 for line in data:
-        row = line.strip().split( "," )
+        row = line.strip().decode().split( "," )
         xList.append(row)
 nrow = len(xList)
 ncol = len(xList[1])
