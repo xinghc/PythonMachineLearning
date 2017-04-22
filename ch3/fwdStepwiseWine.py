@@ -34,12 +34,13 @@ for line in data:
 		xList.append(floatRow)
 
 indices = range(len(xList))
+# One of three parts of data to be tested
 xListTest = [xList[i] for i in indices if i%3 == 0 ]
 labelsTest = [labels[i] for i in indices if i%3 == 0]
+# Two of threee parts of data to be trained
 xListTrain = [xList[i] for i in indices if i%3 != 0 ]
 labelsTrain = [labels[i] for i in indices if i%3 != 0]
 
-#build list of attributes one-at-a-time - starting with empty
 attributeList = []
 index = range(len(xList[0]))
 indexSet = set(index)
@@ -49,12 +50,12 @@ for i in index:
 	attSet = set(attributeList)
 	# remove the attribute that we have put into the attSet already
 	attTrySet = indexSet - attSet
-	# make it from set to a list
 	attTry = [ii for ii in attTrySet]
 	errorList = []
 	attTemp = []
 	# Try a new attribute with existing selected set (i.e., attributeList)
 	for iTry in attTry:
+		# Evaluate new candidates with existing attribites 
 		attTemp = [] + attributeList
 		attTemp.append(iTry)
 		xTrainTemp = xattrSelect(xListTrain, attTemp)
@@ -65,10 +66,12 @@ for i in index:
 		yTest = numpy.array(labelsTest)
 		wineQModel = linear_model.LinearRegression()
 		wineQModel.fit(xTrain,yTrain)
-		rmsError = numpy.linalg.norm((yTest-wineQModel.predict(xTest)),2)/sqrt(len(yTest))
+		rmsError = \
+		  numpy.linalg.norm((yTest-wineQModel.predict(xTest)),2)/sqrt(len(yTest))
 		errorList.append(rmsError)
 		attTemp = []
 
+	print("Time " + str(i) + " : " + str(errorList))
 	iBest = numpy.argmin(errorList)
 	attributeList.append(attTry[iBest])
 	oosError.append(errorList[iBest])
@@ -81,20 +84,22 @@ namesList = [names[i] for i in attributeList]
 print("\n" + "Best attribute names")
 print(namesList)
 
-#Plot error versus number of attributes
+# Plot error versus number of attributes
 x = range(len(oosError))
 plt.plot(x, oosError, 'k')
 plt.xlabel('Number of Attributes')
 plt.ylabel('Error (RMS)')
 plt.show()
 
+# Use only two attribute to predict the test group
 indexBest = oosError.index(min(oosError))
 attributesBest = attributeList[1:(indexBest+1)]
 xTrainTemp = xattrSelect(xListTrain, attributesBest)
 xTestTemp = xattrSelect(xListTest, attributesBest)
-xTrain = numpy.array(xTrainTemp); xTest = numpy.array(xTestTemp)
+xTrain = numpy.array(xTrainTemp); 
+xTest = numpy.array(xTestTemp)
 
-#train and plot error histogram
+# train and plot error histogram
 wineQModel = linear_model.LinearRegression()
 wineQModel.fit(xTrain,yTrain)
 errorVector = yTest-wineQModel.predict(xTest)
